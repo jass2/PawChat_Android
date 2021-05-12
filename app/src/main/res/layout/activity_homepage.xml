@@ -7,23 +7,18 @@
     android:layout_height="match_parent">
 
     <ScrollView
-        android:layout_width="405dp"
-        android:layout_height="138dp"
+        android:layout_width="881dp"
+        android:layout_height="1335dp"
         card_view:layout_constraintBottom_toBottomOf="parent"
-        card_view:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp">
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintStart_toStartOf="parent"
+        card_view:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="387dp"
-                android:layout_height="match_parent"
-                android:text="Test" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

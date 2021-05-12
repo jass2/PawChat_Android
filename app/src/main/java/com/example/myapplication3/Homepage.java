@@ -1,35 +1,28 @@
 package com.example.myapplication3;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.myapplication3.views.CardViewPost;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static com.example.myapplication3.R.layout.activity_homepage;
@@ -42,16 +35,18 @@ public class Homepage extends AppCompatActivity {
     GoogleSignInAccount account;
     LinearLayout sv;
     CardView cv;
-    ArrayList<TextView> posts;
+    ArrayList<CardViewPost> posts;
     String uid;
     TextView[] postViews;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        setContentView(activity_homepage);
        db = FirebaseFirestore.getInstance();
        sv = findViewById(R.id.scroll);
+       final LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         db.collection("posts").orderBy("time", DESCENDING)
                 .get()
@@ -59,20 +54,21 @@ public class Homepage extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            ArrayList<TextView> textViews = new ArrayList<>();
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                CardView cv = new CardView(getApplicationContext());
-                                TextView temp = new TextView(getApplicationContext());
-                                temp.setText(document.get("text").toString());
-                                System.out.println(document.get("text").toString());
-                                sv.addView(temp);
+                                String postBody = Objects.requireNonNull(document.get("text")).toString();
+                                String author = Objects.requireNonNull(document.get("poster_id")).toString();
+                                View postCard = getLayoutInflater().inflate(R.layout.sample_card_view, sv, false);
+                                TextView f = postCard.findViewById(R.id.textBody);
+                                f.setText(postBody);
+                                TextView e = postCard.findViewById(R.id.poster);
+                                e.setText(author);
+                                sv.addView(postCard);
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-
     }
 
 }
