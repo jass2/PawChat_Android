@@ -5,22 +5,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:orientation="vertical"
         card_view:layout_constraintEnd_toEndOf="parent"
         card_view:layout_constraintStart_toStartOf="parent"
-        card_view:layout_constraintTop_toTopOf="parent" >
+        card_view:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="88dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:onClick="finishActivity"
+            android:text="Go back"
+            android:textSize="30sp" />
+
         <ListView
-            android:id="@+id/lv"
+            android:id="@+id/comments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent"/>
+            card_view:layout_constraintTop_toTopOf="@id/back"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
