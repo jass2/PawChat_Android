@@ -31,6 +31,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             card_view:layout_constraintTop_toTopOf="@id/back"/>
+
+        <Button
+            android:id="@+id/newPostBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Comment" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,10 +3,13 @@ package com.example.myapplication3;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -22,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 1;
@@ -29,19 +34,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     GoogleSignInClient mGoogleSignInClient;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
+    private Object UserNotAuthenticatedException;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -69,11 +77,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            firebaseAuthWithGoogle(account.getIdToken());
 
-        } catch (ApiException e) {
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            System.out.println("Login Fail");
+            assert account != null;
+            String[] parts = Objects.requireNonNull(account.getEmail()).split("@");
+            if (parts[1].equals("umbc.edu")) {
+                firebaseAuthWithGoogle(account.getIdToken());
+            }
+            else {
+                Context context = getApplicationContext();
+                CharSequence text = "Sign in with a UMBC email address.";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                mGoogleSignInClient.signOut();
+            }
+        } catch (ApiException apiException) {
+            apiException.printStackTrace();
         }
     }
 
@@ -83,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
                             Intent login = new Intent(getApplicationContext(), HomepageActivity.class);
                             startActivity(login);
                             // Sign in success, update UI with the signed-in user's information
